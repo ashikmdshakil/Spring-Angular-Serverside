@@ -2,12 +2,17 @@ package com.example.demo.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 @Component
+@Scope("prototype")
 @Entity
 public class Student {
 	@Id
@@ -17,6 +22,9 @@ public class Student {
 	@Column(unique = true)
 	private String mail;
 	private String department;
+	private String password;
+	private String role;
+	
 	public int getId() {
 		return id;
 	}
@@ -41,10 +49,26 @@ public class Student {
 	public void setDepartment(String department) {
 		this.department = department;
 	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
 	@Override
 	public String toString() {
-		return "Student [id=" + id + ", name=" + name + ", mail=" + mail + ", department=" + department + "]";
+		return "Student [id=" + id + ", name=" + name + ", mail=" + mail + ", department=" + department + ", password="
+				+ password + ", role=" + role + "]";
 	}
+	
+	
+	
 	
 	
 

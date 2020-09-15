@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.model.Role;
 import com.example.demo.model.Student;
 import com.example.demo.repository.jpaRepository;
 
@@ -25,6 +27,8 @@ public class AppController {
 	private jpaRepository repo;
 	@Autowired
 	private Student student;
+	@Autowired
+	private Role role;
 
 	@RequestMapping("/")
 	public String getHomePAge() {
@@ -34,12 +38,14 @@ public class AppController {
 	@GetMapping("save")
 	@CrossOrigin(origins = "*")
 	@ResponseBody
-	public String saveStudent(@RequestParam("name") String name,@RequestParam("mail") String mail, @RequestParam("department") String department) {
+	public String saveStudent(@RequestParam("password") String password ,@RequestParam("name") String name,@RequestParam("mail") String mail, @RequestParam("department") String department) {
 		String message = null;
 		try {
 			student.setName(name);
 			student.setMail(mail);
 			student.setDepartment(department);
+			student.setPassword(password);
+			student.setRole("user");
 			repo.save(student);
 			message = "success";
 		} catch (Exception e) {
@@ -83,19 +89,23 @@ public class AppController {
 	@CrossOrigin(origins = "*")
 	@ResponseBody
 	public String updateStudent(@RequestParam("id") int sid, @RequestParam("name") String name,
-			@RequestParam("mail") String mail, @RequestParam("department") String department) {
+			@RequestParam("mail") String mail, @RequestParam("department") String department,
+			@RequestParam("password") String password, @RequestParam("role") String role) {
 		String result = null;
 		try {
 			student.setId(sid);
 			student.setName(name);
 			student.setMail(mail);
 			student.setDepartment(department);
+			student.setPassword(password);
+			student.setRole(role);
 			repo.save(student);
 			result = "success";
 		} catch (Exception e) {
 			e.printStackTrace();
 			result = "wrong";
 		}
+		student = null;
 		return result;
 	}
 	
@@ -127,5 +137,12 @@ public class AppController {
 		
 		return repo.findById(id);
 	}
+	
+	@RequestMapping("login")
+	@CrossOrigin(origins = "*")
+	@ResponseBody
+	  public Principal user(Principal student) {
+	    return student;
+	  }
 
 }
