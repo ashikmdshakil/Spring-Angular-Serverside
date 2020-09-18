@@ -33,7 +33,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 		.cors().and()
 		.authorizeRequests()
 		.antMatchers("/save").hasAuthority("admin")
-		.antMatchers("/delete").hasAuthority("admin")
+		.antMatchers("/delete**").hasAuthority("admin")
 		.anyRequest().authenticated()
 		.and().httpBasic()
 		.and()

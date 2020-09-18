@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Role;
 import com.example.demo.model.Student;
+import com.example.demo.model.StudentRole;
+import com.example.demo.repository.StudentRoleRepo;
 import com.example.demo.repository.jpaRepository;
 
 @Controller
@@ -28,7 +31,9 @@ public class AppController {
 	@Autowired
 	private Student student;
 	@Autowired
-	private Role role;
+	private StudentRole role;
+	@Autowired
+	private StudentRoleRepo roleRepo;
 
 	@RequestMapping("/")
 	public String getHomePAge() {
@@ -40,13 +45,19 @@ public class AppController {
 	@ResponseBody
 	public String saveStudent(@RequestParam("password") String password ,@RequestParam("name") String name,@RequestParam("mail") String mail, @RequestParam("department") String department) {
 		String message = null;
+		System.out.println(name);
+		System.out.println(password);
 		try {
 			student.setName(name);
 			student.setMail(mail);
 			student.setDepartment(department);
 			student.setPassword(password);
-			student.setRole("user");
+			role.setRole_name("user");
 			repo.save(student);
+			student = null;
+			student = repo.findByMail(mail);
+			role.setStudent(student);
+			roleRepo.save(role);
 			message = "success";
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -90,7 +101,7 @@ public class AppController {
 	@ResponseBody
 	public String updateStudent(@RequestParam("id") int sid, @RequestParam("name") String name,
 			@RequestParam("mail") String mail, @RequestParam("department") String department,
-			@RequestParam("password") String password, @RequestParam("role") String role) {
+			@RequestParam("password") String password) {
 		String result = null;
 		try {
 			student.setId(sid);
@@ -98,7 +109,6 @@ public class AppController {
 			student.setMail(mail);
 			student.setDepartment(department);
 			student.setPassword(password);
-			student.setRole(role);
 			repo.save(student);
 			result = "success";
 		} catch (Exception e) {
@@ -135,7 +145,8 @@ public class AppController {
 	@ResponseBody
 	public Student getStudent(@RequestParam("id") int id) {
 		
-		return repo.findById(id);
+		student = repo.findById(id);
+		return student;
 	}
 	
 	@RequestMapping("login")

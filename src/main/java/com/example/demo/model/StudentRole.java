@@ -9,14 +9,19 @@ import javax.persistence.ManyToOne;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Component
 @Entity
 @Scope("prototype")
-public class Role {
+public class StudentRole {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String roleName;
+	private String role_name;
+	@ManyToOne
+	@JsonIgnoreProperties("roles")
+	private Student student;
 	
 	public int getId() {
 		return id;
@@ -24,15 +29,26 @@ public class Role {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getRoleName() {
-		return roleName;
+	public String getRole_name() {
+		return role_name;
+	}
+	public void setRole_name(String role_name) {
+		this.role_name = role_name;
+	}
+	public Student getStudent() {
+		return student;
+	}
+	public void setStudent(Student student) {
+		this.student = student;
 	}
 	@Override
 	public String toString() {
-		return "Role [id=" + id + ", roleName=" + roleName + "]";
+		return "StudentRole [id=" + id + ", role_name=" + role_name + ", student=" + student + "]";
 	}
 	
 	
 	
-
+	
+	
+	
 }

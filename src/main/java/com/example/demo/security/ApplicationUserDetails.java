@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.demo.model.Student;
+import com.example.demo.model.StudentRole;
 
 
 public class ApplicationUserDetails implements UserDetails {
@@ -23,7 +24,11 @@ public class ApplicationUserDetails implements UserDetails {
 	
 	public ApplicationUserDetails(Student student) {
 		super();
-		authorities.add(new SimpleGrantedAuthority(student.getRole()));
+		List<StudentRole> roles = new ArrayList<StudentRole>();
+		roles = student.getRoles();
+		for(StudentRole role : roles) {
+			authorities.add(new SimpleGrantedAuthority(role.getRole_name()));
+		}
 		this.username = student.getMail();
 		this.password = student.getPassword();
 	}
@@ -31,19 +36,19 @@ public class ApplicationUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return authorities;
+		return this.authorities;
 	}
 
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
-		return password;
+		return this.password;
 	}
 
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return username;
+		return this.username;
 	}
 
 	@Override

@@ -1,16 +1,22 @@
 package com.example.demo.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Component
 @Scope("prototype")
 @Entity
@@ -23,7 +29,10 @@ public class Student {
 	private String mail;
 	private String department;
 	private String password;
-	private String role;
+	
+	@OneToMany(mappedBy = "student",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JsonIgnoreProperties("student")
+	private List<StudentRole> roles;
 	
 	public int getId() {
 		return id;
@@ -55,17 +64,22 @@ public class Student {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getRole() {
-		return role;
+
+	public List<StudentRole> getRoles() {
+		return roles;
 	}
-	public void setRole(String role) {
-		this.role = role;
+	public void setRoles(List<StudentRole> roles) {
+		this.roles = roles;
 	}
 	@Override
 	public String toString() {
 		return "Student [id=" + id + ", name=" + name + ", mail=" + mail + ", department=" + department + ", password="
-				+ password + ", role=" + role + "]";
+				+ password + ", roles=" + roles + "]";
 	}
+	
+	
+	
+	
 	
 	
 	
