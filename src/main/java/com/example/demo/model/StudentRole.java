@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class StudentRole {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String role_name;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("roles")
 	private Student student;
 	

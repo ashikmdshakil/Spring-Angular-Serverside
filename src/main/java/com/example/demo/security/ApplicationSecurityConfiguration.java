@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,17 +37,30 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 		.authorizeRequests()
 		.antMatchers("/save").hasAuthority("admin")
 		.antMatchers("/delete**").hasAuthority("admin")
+		.antMatchers("/setRoles").hasAuthority("admin")
 		.anyRequest().authenticated()
 		.and().httpBasic()
 		.and()
 		.logout().invalidateHttpSession(true)
 		.clearAuthentication(true)
-		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+		.and().csrf().disable();
 	}
 	
 	@Bean
 	public PasswordEncoder getPasswordEncoder() {
 		return NoOpPasswordEncoder.getInstance();
 	}
+	  @Bean
+	    public WebMvcConfigurer corsConfigurer() {
+	        return new WebMvcConfigurerAdapter() {
+	            @Override
+	            public void addCorsMappings(CorsRegistry registry) {
+	                registry.addMapping("/**")
+	                .allowedMethods("GET","POST")
+	                .allowedOrigins("http://localhost:4200");
+	            }
+	        };
+	    }
 
 }

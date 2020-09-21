@@ -7,11 +7,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,8 +28,10 @@ import com.example.demo.repository.StudentRoleRepo;
 import com.example.demo.repository.jpaRepository;
 
 @Controller
+//@CrossOrigin(origins = "*")
 @Scope("prototype")
 public class AppController {
+	
 	@Autowired
 	private jpaRepository repo;
 	@Autowired
@@ -34,14 +40,15 @@ public class AppController {
 	private StudentRole role;
 	@Autowired
 	private StudentRoleRepo roleRepo;
-
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	@RequestMapping("/")
 	public String getHomePAge() {
 		return "index";
 	}
 
 	@GetMapping("save")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 	public String saveStudent(@RequestParam("password") String password ,@RequestParam("name") String name,@RequestParam("mail") String mail, @RequestParam("department") String department) {
 		String message = null;
@@ -68,7 +75,7 @@ public class AppController {
 	}
 
 	@RequestMapping("students")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 
 	public List<Student> getStudents() {
@@ -77,7 +84,7 @@ public class AppController {
 	}
 
 	@RequestMapping("delete")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 	public String deleteStudent(@RequestParam("id") int sid, @RequestParam("name") String name,
 			@RequestParam("mail") String mail, @RequestParam("department") String department) {
@@ -97,7 +104,7 @@ public class AppController {
 	}
 	
 	@RequestMapping("update")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 	public String updateStudent(@RequestParam("id") int sid, @RequestParam("name") String name,
 			@RequestParam("mail") String mail, @RequestParam("department") String department,
@@ -122,7 +129,7 @@ public class AppController {
 	
 	
 	@RequestMapping("deleteId")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 	public String deleteStudentById(@RequestParam("id") int sid) {
 		String result = null;
@@ -140,7 +147,7 @@ public class AppController {
 
 	@RequestMapping("student")
 
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 
 	@ResponseBody
 	public Student getStudent(@RequestParam("id") int id) {
@@ -148,12 +155,34 @@ public class AppController {
 		student = repo.findById(id);
 		return student;
 	}
+	@RequestMapping("liveRoles")
+
+	//@CrossOrigin(origins = "*")
+
+	@ResponseBody
+	public Student getStudentRoles(@RequestParam("mail") String mail) {
+		
+		student = repo.findByMail(mail);
+		return student;
+	}
 	
 	@RequestMapping("login")
-	@CrossOrigin(origins = "*")
+	//@CrossOrigin(origins = "*")
 	@ResponseBody
 	  public Principal user(Principal student) {
 	    return student;
+	  }
+	
+	@PostMapping(value = "setRoles",consumes="application/json")
+	@ResponseBody
+	  public String UpdateRole(@RequestBody Student student){
+
+		jdbcTemplate.update("DELETE FROM student_role WHERE student_id =?",student.getId());
+		
+		for(StudentRole role : student.getRoles()) {
+			jdbcTemplate.update("INSERT INTO student_role(role_name, student_id) VALUES(?, ?)",role.getRole_name(),student.getId());
+		}
+	    return "success";
 	  }
 
 }
